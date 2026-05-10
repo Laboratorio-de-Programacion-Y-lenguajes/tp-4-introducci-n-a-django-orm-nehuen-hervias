@@ -3,6 +3,7 @@ from __future__ import annotations
 from django.db.models import Count, Q
 
 from .models import Autor, Libro
+from catalogo import models
 
 
 def libros_por_categoria(nombre_categoria: str):
@@ -58,8 +59,10 @@ def libros_sin_disponibilidad():
             activos=Count("prestamo", filter=Q(prestamo__fecha_devolucion__isnull=True))
         ).filter(activos=models.F("cantidad_total"))
     """
-    # TODO: implementar con annotate + F expression + filter
-    raise NotImplementedError
+    return Libro.objects.annotate(
+        activos=Count("prestamo", filter=Q(prestamo__fecha_devolucion__isnull=True))
+    ).filter(activos=models.F("cantidad_total"))
+
 
 
 def top_n_libros_mas_prestados(n: int):
